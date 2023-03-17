@@ -1,0 +1,66 @@
+﻿@page "/"
+@using BlazorApp1.Data
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<button @onclick="ReadFromSql">Read From Sql</button>
+
+@if (animeList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>URL</th>
+                <th>Image</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var anime in animeList)
+            {
+                <tr>
+                    <td>@anime.Id</td>
+                    <td>@anime.name</td>
+                    <td><p style="width: 200px">@anime.url</p></td>
+                    <td><img style="width: 300px; height: auto" src=@anime.url /></td>
+                    <td><button @onclick="() => DeleteFromSql(anime.Id)">Delete</button></td>
+                </tr>
+            }
+
+            <tr>
+                <td><button @onclick="AddToSql">Add</button></td>
+                <td><input @bind="anime.name" /></td>
+                <td><input @bind="anime.url" /></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+}
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+    Anime anime = new();
+    List<Anime> animeList = Sql.Read();
+    void ReadFromSql() { animeList = Sql.Read(); }
+    void AddToSql()
+    { 
+        Sql.Create(anime);
+        animeList = Sql.Read();
+    }
+    void DeleteFromSql(int id)
+    {
+        Sql.Delete(id);
+        animeList = Sql.Read();
+    }
+}
